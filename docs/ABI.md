@@ -359,7 +359,12 @@ The stream must have been created with `pausable = true`, must not be
 stream becomes `Paused` and its accrual clock freezes at the ledger timestamp
 of the call. Wall-clock time that passes while paused does not increase
 `vested_of` or the withdrawable balance, and does not allow a cliff to pass.
-The recipient can still withdraw value accrued before the pause. When
+The recipient can still withdraw value accrued before the pause — including
+value accrued at the pause instant itself: a stream paused exactly at its
+cliff instant satisfies `stream_time == cliff_time` while frozen, the gate is
+open, and the whole cliff amount is withdrawable
+(`test::cliff::paused_exactly_at_the_cliff_instant_leaves_the_gate_open` pins
+the boundary). When
 `resume` is later called, the paused interval is added to `paused_total` and
 the schedule continues from the same stream time, stretching the effective end
 date by the paused duration.
